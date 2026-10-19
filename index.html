@@ -94,6 +94,7 @@
   .pip.W { background: var(--w); } .pip.U { background: var(--u); color: #fff; }
   .pip.B { background: var(--b); color: #fff; } .pip.R { background: var(--r); color: #fff; }
   .pip.G { background: var(--g); } .pip.C { background: var(--c); }
+  .pip.gold { background: linear-gradient(135deg, #f0d58e, #d9b45a); }
   table.piles { width: 100%; border-collapse: collapse; margin: 12px 0 0; }
   table.piles th, table.piles td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); }
   table.piles th { color: var(--muted); font-weight: 600; font-size: .85rem; text-transform: uppercase; letter-spacing: .05em; }
@@ -159,14 +160,14 @@
   <p class="lead">The idea, and how the pieces fit together.</p>
 
   <div class="panel">
-    <p>It's commander in a box. Everything you need is in there: six shared piles of 100 cards (one per color plus colorless), a stack of real legendary commanders, and a stack of secret ambition cards. Pick a commander, draw from the piles your commander's colors allow, and play. Setup takes a couple of minutes and nobody has to build a deck.</p>
+    <p>Box Commander is Commander in a box. Everything you need is in there: seven shared piles of 100 cards (one per color, plus colorless and gold), a stack of real legendary commanders, and a stack of secret ambition cards. Pick a commander, draw from the piles your commander's colors allow, and play. Setup takes a couple of minutes and nobody has to build a deck.</p>
     <p>Every game plays differently. The piles roll on from one game to the next instead of being reshuffled, every table gets a different mix of commanders, and each player chases their own secret ambition alongside the usual fight to be the last one standing.</p>
   </div>
 
   <div class="grid-3">
     <div class="panel">
       <h3>Shared piles</h3>
-      <p>Five color piles and one colorless pile. You draw from the piles inside your commander's color identity plus colorless. Nobody owns a pile; everyone in your colors draws from the same one.</p>
+      <p>Five color piles, one colorless pile, and one gold pile of multicolor cards. You draw from the piles inside your commander's color identity, plus colorless and gold. Nobody owns a pile; everyone in your colors draws from the same one.</p>
     </div>
     <div class="panel">
       <h3>Real commanders</h3>
@@ -188,7 +189,7 @@
 
   <h3>The piles</h3>
   <div class="panel">
-    <p>The box holds six piles of 100 cards each. Piles are never shuffled during a game, and the box contains no search or shuffle effects.</p>
+    <p>The box holds seven piles of 100 cards each. Piles are never shuffled during a game, and the box contains no search or shuffle effects.</p>
     <table class="piles">
       <thead><tr><th>Pile</th><th>Who may draw from it</th></tr></thead>
       <tbody>
@@ -198,8 +199,23 @@
         <tr><td><span class="pip R">R</span> Red</td><td>Commanders with red in their color identity</td></tr>
         <tr><td><span class="pip G">G</span> Green</td><td>Commanders with green in their color identity</td></tr>
         <tr><td><span class="pip C">C</span> Colorless</td><td>Everyone</td></tr>
+        <tr><td><span class="pip gold">M</span> Gold</td><td>Everyone, with a gamble (see below)</td></tr>
       </tbody>
     </table>
+  </div>
+
+  <h3>The Gold pile</h3>
+  <div class="panel">
+    <p>The Gold pile holds cards with an obvious multicolor identity, from two colors up to five. Anyone may draw from it, but every draw is a gamble: a gold card only helps you if it shares at least one color with your commander's color identity.</p>
+    <ul class="rules">
+      <li><b>Look in secret.</b> When you draw a gold card, look at it without showing anyone. If it shares at least one color with your commander's color identity, you keep it.</li>
+      <li><b>Luck of the draw.</b> You cannot redraw a card that matches. You may only redraw if you can prove the card does not match: show it to the table, put it on the bottom of the Gold pile, and draw again from the Gold pile.</li>
+      <li><b>You lose the gamble.</b> You may redraw at most twice per draw. If the third card is also a mismatch, you keep it as a dead card.</li>
+      <li><b>No cheating.</b> You never have to show a card you keep, but if you cast a gold card that shares no color with your commander, the whole table will know.</li>
+      <li><b>Flashback costs are ignored</b> when checking a card's colors, and so are other costs outside the mana cost.</li>
+      <li><b>Mostly-one-color cards</b> with a small second color elsewhere on the card live in their main color's pile and have no restriction. Only cards that are clearly multicolor are in the Gold pile.</li>
+    </ul>
+    <div class="callout"><strong>Why it works:</strong> a mono-color commander matches fewer gold cards, so the Gold pile is a poorer bet for the strongest commanders. A five-color commander matches every gold card.</div>
   </div>
 
   <h3>Drawing and mana</h3>
@@ -256,7 +272,7 @@
   <p class="lead">From box to first turn in a few minutes. Works with 3 to 6 players.</p>
 
   <ol class="steps">
-    <li><b>Lay out the piles.</b> Place the six piles face down in the middle of the table, plus the basic land supply.</li>
+    <li><b>Lay out the piles.</b> Place the seven piles face down in the middle of the table, plus the basic land supply.</li>
     <li><b>Deal commanders and ambitions.</b> Shuffle the commander stack and the ambition stack. Deal each player 3 commanders face up and 2 ambitions face down, all at the same time. In a 3-player game, take Rampage out of the ambition stack first.</li>
     <li><b>Pick a pair that works together.</b> Look at all five cards, then choose 1 commander and 1 ambition that fit each other. Keep your ambition face down and return the unused cards to the box.</li>
     <li><b>Set your life.</b> Everyone starts at 40 life. Put your commander in the command zone.</li>
