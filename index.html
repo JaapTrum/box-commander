@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src https://api.scryfall.com https://cards.scryfall.io; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Box Commander</title>
+<style>
+  :root {
+    --bg: #12141c;
+    --panel: #1b1e2a;
+    --panel-2: #232738;
+    --line: #333852;
+    --text: #e8e6df;
+    --muted: #a3a6b8;
+    --gold: #d9b45a;
+    --gold-soft: #f0d58e;
+    --w: #f3eed8; --u: #4a90d9; --b: #6b5b7b; --r: #d9534f; --g: #4caf6a; --c: #9aa0aa;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; color-scheme: dark; }
+  body {
+    margin: 0;
+    background: radial-gradient(1200px 600px at 50% -200px, #222844 0%, var(--bg) 70%) no-repeat, var(--bg);
+    color: var(--text);
+    font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  a { color: var(--gold-soft); }
+  header.hero { text-align: center; padding: 64px 20px 32px; }
+  header.hero h1 {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(2.2rem, 6vw, 3.6rem);
+    letter-spacing: .02em;
+    margin: 0 0 8px;
+    color: var(--gold-soft);
+  }
+  header.hero p { margin: 0 auto; max-width: 640px; color: var(--muted); }
+  nav.top {
+    position: sticky; top: 0; z-index: 10;
+    display: flex; flex-wrap: wrap; gap: 6px; justify-content: center;
+    padding: 10px 12px;
+    background: rgba(18,20,28,.92);
+    border-bottom: 1px solid var(--line);
+    backdrop-filter: blur(6px);
+  }
+  nav.top a {
+    text-decoration: none; color: var(--text);
+    padding: 6px 14px; border-radius: 999px; font-size: .92rem;
+    border: 1px solid transparent;
+  }
+  nav.top a:hover { border-color: var(--gold); color: var(--gold-soft); }
+  main { max-width: 1100px; margin: 0 auto; padding: 0 20px 80px; }
+  section { padding-top: 56px; scroll-margin-top: 56px; }
+  h2 {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.9rem; margin: 0 0 6px; color: var(--gold-soft);
+  }
+  h2 + .lead { color: var(--muted); margin: 0 0 24px; }
+  h3 { margin: 28px 0 8px; font-size: 1.15rem; color: var(--text); }
+  p { margin: 0 0 14px; }
+  .panel {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 20px 22px; margin-bottom: 16px;
+  }
+  .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+  .grid-3 .panel { margin: 0; }
+  .panel h3 { margin-top: 0; color: var(--gold-soft); }
+  ol.steps { counter-reset: step; list-style: none; padding: 0; margin: 0; }
+  ol.steps li {
+    counter-increment: step; position: relative;
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 14px 18px 14px 62px; margin-bottom: 10px;
+  }
+  ol.steps li::before {
+    content: counter(step);
+    position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+    width: 32px; height: 32px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: var(--gold); color: #1a1405; font-weight: 700;
+  }
+  ul.rules { padding-left: 20px; margin: 0 0 14px; }
+  ul.rules li { margin-bottom: 8px; }
+  .callout {
+    border-left: 4px solid var(--gold); background: var(--panel-2);
+    border-radius: 0 var(--radius) var(--radius) 0; padding: 12px 18px; margin: 16px 0;
+  }
+  .callout strong { color: var(--gold-soft); }
+  .pip {
+    display: inline-block; min-width: 22px; height: 22px; line-height: 22px; text-align: center;
+    border-radius: 50%; font-size: .72rem; font-weight: 700; color: #111; margin-right: 3px;
+  }
+  .pip.W { background: var(--w); } .pip.U { background: var(--u); color: #fff; }
+  .pip.B { background: var(--b); color: #fff; } .pip.R { background: var(--r); color: #fff; }
+  .pip.G { background: var(--g); } .pip.C { background: var(--c); }
+  table.piles { width: 100%; border-collapse: collapse; margin: 12px 0 0; }
+  table.piles th, table.piles td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+  table.piles th { color: var(--muted); font-weight: 600; font-size: .85rem; text-transform: uppercase; letter-spacing: .05em; }
+  .tier-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin: 36px 0 6px; }
+  .tier-head h3 { margin: 0; font-size: 1.3rem; color: var(--gold-soft); }
+  .tier-head span { color: var(--muted); font-size: .92rem; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 18px; margin-top: 14px; }
+  figure.card { margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; }
+  figure.card img {
+    display: block; width: 100%; height: auto; aspect-ratio: 488 / 680;
+    background: var(--panel-2); color: var(--muted); font-size: .85rem; text-align: center;
+  }
+  figure.card figcaption { padding: 10px 12px 14px; }
+  figure.card b { display: block; font-size: .98rem; margin-bottom: 2px; }
+  figure.card .plan { color: var(--muted); font-size: .88rem; line-height: 1.4; }
+  figure.card .note { color: var(--gold-soft); font-size: .8rem; margin-top: 6px; }
+  .amb-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; margin-top: 14px; }
+  .amb {
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px;
+    display: grid; grid-template-columns: 38px 1fr; gap: 4px 12px; align-items: start;
+  }
+  .amb .n {
+    grid-row: 1 / span 2; width: 34px; height: 34px; border-radius: 8px;
+    display: grid; place-items: center; font-weight: 700; background: var(--panel-2); color: var(--gold-soft);
+  }
+  .amb b { font-size: 1rem; }
+  .amb p { margin: 0; color: var(--muted); font-size: .92rem; line-height: 1.45; }
+  .kill .n { border: 1px solid var(--r); }
+  .show .n { border: 1px solid var(--u); }
+  .defeat .n { border: 1px solid #a47ad6; }
+  .template {
+    font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .92rem;
+    background: var(--panel-2); border: 1px dashed var(--line); border-radius: 8px; padding: 10px 14px; margin: 10px 0 18px;
+  }
+  footer { text-align: center; color: var(--muted); font-size: .85rem; padding: 30px 20px 50px; border-top: 1px solid var(--line); }
+  @media (max-width: 520px) {
+    header.hero { padding-top: 40px; }
+    .cards { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    figure.card figcaption { padding: 8px 8px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <h1>Box Commander</h1>
+  <p>A grab-and-play multiplayer Commander variant for 3 to 6 players. One box, shared piles, real commanders, and a secret way to win.</p>
+</header>
+
+<nav class="top" aria-label="Sections">
+  <a href="#overview">Overview</a>
+  <a href="#rules">Rules</a>
+  <a href="#setup">Setup</a>
+  <a href="#commanders">Commanders</a>
+  <a href="#ambitions">Ambitions</a>
+</nav>
+
+<main>
+
+<!-- OVERVIEW -->
+<section id="overview">
+  <h2>Overview</h2>
+  <p class="lead">The idea, and how the pieces fit together.</p>
+
+  <div class="panel">
+    <p>It's commander in a box. Everything you need is in there: six shared piles of 100 cards (one per color plus colorless), a stack of real legendary commanders, and a stack of secret ambition cards. Pick a commander, draw from the piles your commander's colors allow, and play. Setup takes a couple of minutes and nobody has to build a deck.</p>
+    <p>Every game plays differently. The piles roll on from one game to the next instead of being reshuffled, every table gets a different mix of commanders, and each player chases their own secret ambition alongside the usual fight to be the last one standing.</p>
+  </div>
+
+  <div class="grid-3">
+    <div class="panel">
+      <h3>Shared piles</h3>
+      <p>Five color piles and one colorless pile. You draw from the piles inside your commander's color identity plus colorless. Nobody owns a pile; everyone in your colors draws from the same one.</p>
+    </div>
+    <div class="panel">
+      <h3>Real commanders</h3>
+      <p>Each player is dealt three real legendary creatures and picks one. Fewer colors means a stronger commander, more colors means more pile choice and a weaker card.</p>
+    </div>
+    <div class="panel">
+      <h3>Secret ambitions</h3>
+      <p>Each player is dealt two ambition cards and keeps one face down. An ambition is a hidden, hard alternate win condition that you have to set up and pull off.</p>
+    </div>
+  </div>
+
+  <div class="callout"><strong>The goal:</strong> a ready-to-go, easy-to-understand, different-every-time game for 3 to 6 players that stays balanced and fun. No deck building, no shuffling in play, no mana screw or flood, and a distinct plan for every commander.</div>
+</section>
+
+<!-- RULES -->
+<section id="rules">
+  <h2>Rules</h2>
+  <p class="lead">Standard Commander rules apply unless noted here.</p>
+
+  <h3>The piles</h3>
+  <div class="panel">
+    <p>The box holds six piles of 100 cards each. Piles are never shuffled during a game, and the box contains no search or shuffle effects.</p>
+    <table class="piles">
+      <thead><tr><th>Pile</th><th>Who may draw from it</th></tr></thead>
+      <tbody>
+        <tr><td><span class="pip W">W</span> White</td><td>Commanders with white in their color identity</td></tr>
+        <tr><td><span class="pip U">U</span> Blue</td><td>Commanders with blue in their color identity</td></tr>
+        <tr><td><span class="pip B">B</span> Black</td><td>Commanders with black in their color identity</td></tr>
+        <tr><td><span class="pip R">R</span> Red</td><td>Commanders with red in their color identity</td></tr>
+        <tr><td><span class="pip G">G</span> Green</td><td>Commanders with green in their color identity</td></tr>
+        <tr><td><span class="pip C">C</span> Colorless</td><td>Everyone</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Drawing and mana</h3>
+  <ul class="rules">
+    <li><b>Draw step:</b> instead of drawing from a library, choose one option. Either take the top card of any pile you are allowed to draw from, or take one basic land from the supply.</li>
+    <li><b>Basic lands from the supply:</b> take any basic you like. Basics are not any-color, so think about which one you take.</li>
+    <li><b>Land drops</b> work as normal: one per turn. Some piles contain special lands, which count as a normal card draw.</li>
+    <li><b>No mulligans.</b> Your opening hand is fixed (see Setup).</li>
+    <li><b>Empty pile:</b> if the pile you want is empty, draw from another allowed pile or take a basic. When every pile you can draw from is empty, you can only take basics.</li>
+  </ul>
+
+  <h3>Commanders</h3>
+  <ul class="rules">
+    <li>Standard Commander rules: cast your commander from the command zone, commander tax of {2} per previous cast, 40 starting life, and 21 commander damage eliminates a player.</li>
+    <li>Color identity only decides which piles you can draw from. It does not restrict the cards you hold or the basics you take.</li>
+    <li>Each player has their <b>own graveyard</b>. Graveyards are never shared, and this matters for commanders like Muldrotha.</li>
+  </ul>
+
+  <h3>No shuffling, rolling piles</h3>
+  <ul class="rules">
+    <li>Never shuffle a pile during the game. Cards that go to a graveyard or exile stay there until the game ends.</li>
+    <li>After the game, sort used cards back into their color's used bin. The next game continues from where each pile left off.</li>
+    <li>When a pile runs low, reset it with a pile deal: deal its used cards into 4 to 6 stacks, then stack those in a random order. Do this between games, not during one.</li>
+    <li>The small commander and ambition stacks can be shuffled normally.</li>
+  </ul>
+
+  <h3>Ambitions</h3>
+  <div class="panel">
+    <p>Each player has one secret ambition, kept face down. There are three types:</p>
+    <p><b>Kill:</b> when you eliminate a player, if the condition is true, you win the game.</p>
+    <p><b>Showdown:</b> when you would lose the game and exactly two players remain, if the condition is true, you win instead.</p>
+    <p><b>Defeat:</b> when you would lose the game at any point, if the condition is true, you win instead.</p>
+    <ul class="rules">
+      <li>"Eliminate" means a loss caused by something you controlled: combat damage, commander damage, or a spell or ability.</li>
+      <li>Kill ambitions are checked right after the elimination resolves. Showdown and Defeat ambitions are checked at the moment you would lose.</li>
+      <li>If several ambitions trigger at once, resolve them in turn order. Reveal your ambition when it wins or when the game ends.</li>
+      <li>Ambitions are an extra way to win, not a replacement. If nobody completes their ambition, the last player standing wins the conventional way.</li>
+    </ul>
+  </div>
+
+  <h3>Optional rules</h3>
+  <div class="panel">
+    <ul class="rules">
+      <li><b>Bail-out:</b> at any time, reveal and discard your ambition to draw two cards.</li>
+      <li><b>Callout:</b> once per game, name another player's ambition. If you are right, they discard it.</li>
+      <li><b>Winner's tax:</b> whoever won the previous game starts last in turn order.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- SETUP -->
+<section id="setup">
+  <h2>Setup</h2>
+  <p class="lead">From box to first turn in a few minutes. Works with 3 to 6 players.</p>
+
+  <ol class="steps">
+    <li><b>Lay out the piles.</b> Place the six piles face down in the middle of the table, plus the basic land supply.</li>
+    <li><b>Deal commanders and ambitions.</b> Shuffle the commander stack and the ambition stack. Deal each player 3 commanders face up and 2 ambitions face down, all at the same time. In a 3-player game, take Rampage out of the ambition stack first.</li>
+    <li><b>Pick a pair that works together.</b> Look at all five cards, then choose 1 commander and 1 ambition that fit each other. Keep your ambition face down and return the unused cards to the box.</li>
+    <li><b>Set your life.</b> Everyone starts at 40 life. Put your commander in the command zone.</li>
+    <li><b>Take your opening hand.</b> Take 3 basics of your choice from the supply. Then draw 4 cards, one at a time, from piles you are allowed to draw from.</li>
+    <li><b>Pick a starting player.</b> Roll a die or use last game's rule if you are using the winner's tax. Play proceeds clockwise.</li>
+    <li><b>Play.</b> On your draw step, draw from an allowed pile or take a basic. First elimination or last two players is where ambitions come alive.</li>
+  </ol>
+
+  <div class="callout"><strong>After the game:</strong> return commanders and ambitions to their stacks, send used cards back to their color's used bin, and keep the piles in their current order for next time.</div>
+</section>
+
+<!-- COMMANDERS -->
+<section id="commanders">
+  <h2>Commanders</h2>
+  <p class="lead">28 real legendary creatures. Images load from Scryfall, so you need an internet connection for artwork.</p>
+
+  <div class="panel">
+    <p>Power is tuned by color count. Mono-color commanders are the strongest cards in the stack, two-color are mid-power, three-color are weaker, and five-color are the weakest of all. The more colors you have, the more piles you can draw from, which makes up the difference.</p>
+  </div>
+
+  <!-- MONO -->
+  <div class="tier-head"><h3>Mono-color</h3><span>10 commanders, strongest cards</span></div>
+  <div class="cards">
+    <figure class="card"><img loading="lazy" referrerpolicy="no-referrer" alt="Brimaz, King of Oreskos" src="https://api.scryfall.com/cards/named?fuzzy=Brimaz%2C+King+of+Oreskos&amp;format=image&amp;version=normal"><figcaption><b>Brimaz, King of Oreskos</b><span class="pip W">W</span><div class="plan">Attack and block to make cat tokens.</div></figcaption></figure>
+    <figure class="card"><img loading="lazy" referrerpolicy="no-referrer" alt="Lyra Dawnbringer" src="https://api.scryfall.com/cards/named?fuzzy=Lyra+Dawnbringer&amp;format=image&amp;version=normal"><figcaption><b>Lyra Dawnbringer</b><span class="pip W">W</span><div class="plan">Big lifelink flier that dominates the air.</div></figcaption></figure>
+    <figure class="card"><img loading="lazy" referrerpolicy="no-referrer" alt="Talrand, Sky Summoner" src="https://api.scryfall.com/cards/named?fuzzy=Talrand%2C+Sky+Summoner&amp;format=image&amp;version=normal"><figcaption><b>Talrand, Sky Summoner</b><span class="pip U">U</span><div class="plan">Instants and sorceries make drakes.</div></figcaption></figure>
+    <figure class="card"><img loading="lazy" referrerpolicy="no-referrer" alt="Alandra, Sky Dreamer" src="https://api.scryfall.com/cards/named?fuzzy=Alandra%2C+Sky+Dreamer&amp;format=image&amp;version=normal"><figcaption><b>Alandra, Sky Dreamer</b><span class="pip U">U</span><div class="plan">Drawing extra cards builds a drake army.</div></figcaption></figure>
+    <figure class="card"><img loading="lazy" referrerpolicy="no-referrer" alt="Kalitas, Traitor of Ghet" src="https://api.scryfall.com/cards/named?fuzzy=Kalitas%2C+Traitor+of+Ghet&amp;format=image&amp;version=normal"><figcaption><b>Kalitas, Traitor of Ghet</b><span class="pip B">B</span><div class="plan">Lifelink body that exiles dying creatures into zombies.</div></figcaption></figure>
+    <figure class="card"><img loading="lazy" referrerpolicy="no-referrer" alt="Josu Vess, Lich Knight" src="https://api.scryfall.com/cards/named?fuzzy=Josu+Vess%2C+Lich+Knight&amp;format=image&amp;version=normal"><figcaption><b>Josu Vess, Lich Knight</b><span class="pip B">B</span><div class="plan">Menace body with a late-game zombie army.</div></figcaption></figure>
+    <figure class="card"><img loading="lazy" referrerpolicy="no-referrer" alt="Krenko, Mob Boss" src="https://api.scryfall.com/cards/named?fuzzy=Krenko%2C+Mob+Boss&amp;format=image&amp;version=normal"><figcaption><b>Krenko, Mob Boss</b><span class="pip R">R</span><div class="plan">Goblin snowball that doubles each turn.</div></figcaption></figure>
+    <figure class="card"><img loading="lazy" referrerpolicy="no-referrer" alt="Hazoret the Fervent" src="https://api.scryfall.com/cards/named?fuzzy=Hazoret+the+Fervent&amp;format=image&amp;version=normal"><figcaption><b>Hazoret the Fervent</b><span class="pip R">R</span><div class="plan">Empty-hand aggression with a discard burn outlet.</div></figcaption></figure>
+    <figure class="card"><img loading="lazy" referrerpolicy="no-referrer" alt="Goreclaw, Terror of Qal Sisma" src="https://api.scryfall.com/cards/named?fuzzy=Goreclaw%2C+Terror+of+Qal+Sisma&amp;format=image&amp;version=normal"><figcaption><b>Goreclaw, Terror of Qal Sisma</b><span class="pip G">G</span><div class="plan">Big creatures cost less and hit harder.</div></figcaption></figure>
+    <figure class="card"><img loading="lazy" referrerpolicy="no-referrer" alt="Rishkar, Peema Renegade" src="https://api.scryfall.com/cards/named?fuzzy=Rishkar%2C+Peema+Renegade&amp;format=image&amp;version=normal"><figcaption><b>Rishkar, Peema Renegade</b><span class="pip G">G</span><div class="plan">Counters turn creatures into mana sources.</div></figcaption></figure>
+  </div>
+
+  <!-- TWO COLOR -->
+  <div class="tier-head"><h3>Two-color</h3><span>10 commanders, mid-power</span></div>
+  <div class="cards">
+    <figure class="card"><img loading="lazy" referrerpolicy="no-referrer" alt="Brago, King Eternal" src="https://api.scryfall.com/cards/named?fuzzy=Brago%2C+King+Eternal&amp;format=image&amp;version=normal"><figcaption><b>Brago, King Eternal</b><span class="pip W">W</span><span class="pip U">U</span><div class="plan">Flickers your permanents when it connects.</div></figcaption></figure>
+    <figure class="card"><img loading="lazy" referrerpolicy="no-referrer" alt="Alela, Artful Provocateur" src="https://api.scryfall.com/cards/named?fuzzy=Alela%2C+Artful+Provocateur&amp;format=image&amp;version=normal"><figcaption><b>Alela, Artful Provocateur</b><span class="pip U">U</span><span class="pip B">B</span><div class="plan">Artifacts and enchantments make faerie fliers.</div></figcaption></figure>
+    <figure class="card"><img loading="lazy" referrerpolicy="no-referrer" alt="Kardur, Doomscourge" src="https://api.scryfall.com/cards/named?fuzzy=Kardur%2C+Doomscourge&amp;format=image&amp;version=normal"><figcaption><b>Kardur, Doomscourge</b><span class="pip B">B</span><span class="pip R">R</span><div class="plan">Forces opponents to attack each other, then drains.</div></figcaption></figure>
+    <figure class="card"><img loading="lazy" referrerpolicy="no-referrer" alt="Radha, Heir to Keld" src="https://api.scryfall.com/cards/named?fuzzy=Radha%2C+Heir+to+Keld&amp;format=image&amp;version=normal"><figcaption><b>Radha, Heir to Keld</b><span class="pip R">R</span><span class="pip G">G</span><div class="plan">Mana ramp and attack bonuses.</div></figcaption></figure>
+    <figure class="card"><img loading="lazy" referrerpolicy="no-referrer" alt="Trostani, Selesnya's Voice" src="https://api.scryfall.com/cards/named?fuzzy=Trostani%2C+Selesnya%27s+Voice&amp;format=image&amp;version=normal"><figcaption><b>Trostani, Selesnya's Voice</b><span class="pip G">G</span><span class="pip W">W</span><div class="plan">Gains life from every creature that enters.</div></figcaption></figure>
+    <figure class="card"><img loading="lazy" referrerpolicy="no-referrer" alt="Elenda, the Dusk Rose" src="https://api.scryfall.com/cards/named?fuzzy=Elenda%2C+the+Dusk+Rose&amp;format=image&amp;version=normal"><figcaption><b>Elenda, the Dusk Rose</b><span class="pip W">W</span><span class="pip B">B</span><div class="plan">Grows as creatures die, leaves vampires behind.</div></figcaption></figure>
+    <figure class="card"><img loading="lazy" referrerpolicy="no-referrer" alt="Niv-Mizzet, the Firemind" src="https://api.scryfall.com/cards/named?fuzzy=Niv-Mizzet%2C+the+Firemind&amp;format=image&amp;version=normal"><figcaption><b>Niv-Mizzet, the Firemind</b><span class="pip U">U</span><span class="pip R">R</span><div class="plan">Draws cards and pings on every draw.</div></figcaption></figure>
+    <figure class="card"><img loading="lazy" referrerpolicy="no-referrer" alt="Meren of Clan Nel Toth" src="https://api.scryfall.com/cards/named?fuzzy=Meren+of+Clan+Nel+Toth&amp;format=image&amp;version=normal"><figcaption><b>Meren of Clan Nel Toth</b><span class="pip B">B</span><span class="pip G">G</span><div class="plan">Brings creatures back from your graveyard each turn.</div></figcaption></figure>
+    <figure class="card"><img loading="lazy" referrerpolicy="no-referrer" alt="Aurelia, Exemplar of Justice" src="https://api.scryfall.com/cards/named?fuzzy=Aurelia%2C+Exemplar+of+Justice&amp;format=image&amp;version=normal"><figcaption><b>Aurelia, Exemplar of Justice</b><span class="pip R">R</span><span class="pip W">W</span><div class="plan">Pumps one attacker each combat.</div></figcaption></figure>
+    <figure class="card"><img loading="lazy" referrerpolicy="no-referrer" alt="Edric, Spymaster of Trest" src="https://api.scryfall.com/cards/named?fuzzy=Edric%2C+Spymaster+of+Trest&amp;format=image&amp;version=normal"><figcaption><b>Edric, Spymaster of Trest</b><span class="pip G">G</span><span class="pip U">U</span><div class="plan">Politics: creatures that hit opponents draw cards.</div></figcaption></figure>
+  </div>
+
+  <!-- THREE COLOR -->
+  <div class="tier-head"><h3>Three-color</h3><span>5 commanders, weaker cards, more piles</span></div>
+  <div class="cards">
+    <figure class="card"><img loading="lazy" referrerpolicy="no-referrer" alt="Doran, the Siege Tower" src="https://api.scryfall.com/cards/named?fuzzy=Doran%2C+the+Siege+Tower&amp;format=image&amp;version=normal"><figcaption><b>Doran, the Siege Tower</b><span class="pip B">B</span><span class="pip G">G</span><span class="pip W">W</span><div class="plan">Creatures fight with toughness instead of power.</div></figcaption></figure>
+    <figure class="card"><img loading="lazy" referrerpolicy="no-referrer" alt="Animar, Soul of Elements" src="https://api.scryfall.com/cards/named?fuzzy=Animar%2C+Soul+of+Elements&amp;format=image&amp;version=normal"><figcaption><b>Animar, Soul of Elements</b><span class="pip U">U</span><span class="pip R">R</span><span class="pip G">G</span><div class="plan">Each creature spell makes the next ones cheaper.</div></figcaption></figure>
+    <figure class="card"><img loading="lazy" referrerpolicy="no-referrer" alt="Kykar, Wind's Fury" src="https://api.scryfall.com/cards/named?fuzzy=Kykar%2C+Wind%27s+Fury&amp;format=image&amp;version=normal"><figcaption><b>Kykar, Wind's Fury</b><span class="pip U">U</span><span class="pip R">R</span><span class="pip W">W</span><div class="plan">Noncreature spells make spirit fliers.</div></figcaption></figure>
+    <figure class="card"><img loading="lazy" referrerpolicy="no-referrer" alt="Muldrotha, the Gravetide" src="https://api.scryfall.com/cards/named?fuzzy=Muldrotha%2C+the+Gravetide&amp;format=image&amp;version=normal"><figcaption><b>Muldrotha, the Gravetide</b><span class="pip B">B</span><span class="pip G">G</span><span class="pip U">U</span><div class="plan">Replays permanents from your graveyard every turn.</div><div class="note">Needs separate graveyards for each player.</div></figcaption></figure>
+    <figure class="card"><img loading="lazy" referrerpolicy="no-referrer" alt="Prossh, Skyraider of Kher" src="https://api.scryfall.com/cards/named?fuzzy=Prossh%2C+Skyraider+of+Kher&amp;format=image&amp;version=normal"><figcaption><b>Prossh, Skyraider of Kher</b><span class="pip B">B</span><span class="pip R">R</span><span class="pip G">G</span><div class="plan">Big flier that makes kobold tokens to sacrifice.</div></figcaption></figure>
+  </div>
+
+  <!-- FIVE COLOR -->
+  <div class="tier-head"><h3>Five-color</h3><span>2 commanders, weakest cards, all piles</span></div>
+  <div class="cards">
+    <figure class="card"><img loading="lazy" referrerpolicy="no-referrer" alt="Kenrith, the Returned King" src="https://api.scryfall.com/cards/named?fuzzy=Kenrith%2C+the+Returned+King&amp;format=image&amp;version=normal"><figcaption><b>Kenrith, the Returned King</b><span class="pip W">W</span><span class="pip U">U</span><span class="pip B">B</span><span class="pip R">R</span><span class="pip G">G</span><div class="plan">Five abilities, one for each color of mana.</div></figcaption></figure>
+    <figure class="card"><img loading="lazy" referrerpolicy="no-referrer" alt="Child of Alara" src="https://api.scryfall.com/cards/named?fuzzy=Child+of+Alara&amp;format=image&amp;version=normal"><figcaption><b>Child of Alara</b><span class="pip W">W</span><span class="pip U">U</span><span class="pip B">B</span><span class="pip R">R</span><span class="pip G">G</span><div class="plan">Huge trampler that wipes the board when it dies.</div><div class="note">Needs all five colors of mana.</div></figcaption></figure>
+  </div>
+
+  <!-- COLORLESS -->
+  <div class="tier-head"><h3>Colorless</h3><span>1 commander, only the colorless pile</span></div>
+  <div class="cards">
+    <figure class="card"><img loading="lazy" referrerpolicy="no-referrer" alt="Karn, Silver Golem" src="https://api.scryfall.com/cards/named?fuzzy=Karn%2C+Silver+Golem&amp;format=image&amp;version=normal"><figcaption><b>Karn, Silver Golem</b><span class="pip C">C</span><div class="plan">Turns noncreature artifacts into creatures.</div><div class="note">Draws only from the colorless pile.</div></figcaption></figure>
+  </div>
+</section>
+
+<!-- AMBITIONS -->
+<section id="ambitions">
+  <h2>Ambitions</h2>
+  <p class="lead">30 secret alternate win conditions. Each player is dealt 2 and keeps 1.</p>
+
+  <div class="panel">
+    <p>An ambition is a win condition you have to execute on. It adds a layer of strategy on top of the normal game, and because it is secret, the rest of the table has to guess what you are up to. If nobody completes their ambition, the last player standing wins the conventional way.</p>
+  </div>
+
+  <div class="tier-head"><h3>Kill ambitions</h3><span>When you eliminate a player, if the condition is true, you win</span></div>
+  <div class="amb-grid">
+    <div class="amb kill"><div class="n">1</div><b>Last Stand</b><p>You have the lowest life total of all remaining players and control more creatures than any of them.</p></div>
+    <div class="amb kill"><div class="n">2</div><b>Empty-Handed</b><p>You have no cards in hand and control more lands than any other player.</p></div>
+    <div class="amb kill"><div class="n">3</div><b>Hoarder</b><p>You have 10 or more cards in hand.</p></div>
+    <div class="amb kill"><div class="n">4</div><b>Warmonger</b><p>Your creatures dealt combat damage this turn to every other remaining player.</p></div>
+    <div class="amb kill"><div class="n">5</div><b>Pacifist</b><p>You eliminate a player with anything other than combat damage.</p></div>
+    <div class="amb kill"><div class="n">6</div><b>Tycoon</b><p>You control 15 or more lands.</p></div>
+    <div class="amb kill"><div class="n">7</div><b>Minimalist</b><p>You control 2 or fewer nonland permanents.</p></div>
+    <div class="amb kill"><div class="n">8</div><b>Reaper</b><p>You have 8 or more creature cards in your graveyard.</p></div>
+    <div class="amb kill"><div class="n">9</div><b>Dynasty</b><p>Your commander is on the battlefield and has been cast 3 or more times this game.</p></div>
+    <div class="amb kill"><div class="n">10</div><b>Untouched</b><p>No player has dealt damage to you this game.</p></div>
+    <div class="amb kill"><div class="n">11</div><b>Architect</b><p>You control 3 or more artifacts, 3 or more enchantments and 3 or more creatures.</p></div>
+    <div class="amb kill"><div class="n">12</div><b>Rampage</b><p>You have already eliminated another player this game. Not for 3-player games.</p></div>
+  </div>
+
+  <div class="tier-head"><h3>Showdown ambitions</h3><span>When you would lose and exactly two players remain, if the condition is true, you win instead</span></div>
+  <div class="amb-grid">
+    <div class="amb show"><div class="n">13</div><b>Full Hand</b><p>You have 7 or more cards in hand and 7 or more untapped lands.</p></div>
+    <div class="amb show"><div class="n">14</div><b>Swarm</b><p>You control at least twice as many creatures as the other player.</p></div>
+    <div class="amb show"><div class="n">15</div><b>Boneyard</b><p>You have 15 or more cards in your graveyard.</p></div>
+    <div class="amb show"><div class="n">16</div><b>Stay Home</b><p>You have not attacked this game.</p></div>
+    <div class="amb show"><div class="n">17</div><b>Landlord</b><p>You control more lands and more permanents than the other player.</p></div>
+    <div class="amb show"><div class="n">18</div><b>Last Man</b><p>You control no creatures and the other player controls 5 or more.</p></div>
+    <div class="amb show"><div class="n">19</div><b>Everyman</b><p>You have dealt damage to every other player this game.</p></div>
+    <div class="amb show"><div class="n">20</div><b>Curator</b><p>You control 4 or more artifacts and 4 or more enchantments.</p></div>
+    <div class="amb show"><div class="n">21</div><b>Archivist</b><p>Your graveyard holds 4 or more instants and 4 or more sorceries.</p></div>
+    <div class="amb show"><div class="n">22</div><b>Giant</b><p>You control a creature with power 12 or greater.</p></div>
+    <div class="amb show"><div class="n">23</div><b>Out of Gas</b><p>You control 12 or more permanents and have no cards in hand.</p></div>
+    <div class="amb show"><div class="n">24</div><b>Technicality</b><p>You have more life than the other player.</p></div>
+  </div>
+
+  <div class="tier-head"><h3>Defeat ambitions</h3><span>When you would lose the game at any point, if the condition is true, you win instead</span></div>
+  <div class="amb-grid">
+    <div class="amb defeat"><div class="n">25</div><b>Ghost</b><p>You were eliminated by noncombat damage or life loss.</p></div>
+    <div class="amb defeat"><div class="n">26</div><b>Rival</b><p>The player eliminating you has 5 or less life.</p></div>
+    <div class="amb defeat"><div class="n">27</div><b>Scorched Earth</b><p>Every remaining opponent has 20 or less life.</p></div>
+    <div class="amb defeat"><div class="n">28</div><b>Overrun</b><p>You control 8 or more creatures.</p></div>
+    <div class="amb defeat"><div class="n">29</div><b>Archive</b><p>You have 12 or more cards in hand.</p></div>
+    <div class="amb defeat"><div class="n">30</div><b>Relentless</b><p>Your commander has been cast 4 or more times.</p></div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  Box Commander is a fan-made house format. Card images and names are property of Wizards of the Coast and are loaded from Scryfall.
+</footer>
+
+</body>
+</html>
