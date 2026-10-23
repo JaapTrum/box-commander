@@ -161,7 +161,7 @@
 
   <div class="panel">
     <p>Box Commander is Commander in a box. Everything you need is in there: seven shared piles of 100 cards (one per color, plus colorless and gold), a stack of real legendary commanders, and a stack of secret ambition cards. Pick a commander, draw from the piles your commander's colors allow, and play. Setup takes a couple of minutes and nobody has to build a deck.</p>
-    <p>Every game plays differently. The piles roll on from one game to the next instead of being reshuffled, every table gets a different mix of commanders, and each player chases their own secret ambition alongside the usual fight to be the last one standing.</p>
+    <p>Every game plays differently. Every table gets a different mix of commanders, and each player chases their own secret ambition alongside the usual fight to be the last one standing.</p>
   </div>
 
   <div class="grid-3">
@@ -189,7 +189,7 @@
 
   <h3>The piles</h3>
   <div class="panel">
-    <p>The box holds seven piles of 100 cards each. No card in the box lets you search a pile. Shuffling a pile or putting cards on the bottom is fine when a card tells you to.</p>
+    <p>The box holds seven piles of 100 cards each.</p>
     <table class="piles">
       <thead><tr><th>Pile</th><th>Who may draw from it</th></tr></thead>
       <tbody>
@@ -209,9 +209,7 @@
     <p>The Gold pile holds cards with an obvious multicolor identity, from two colors up to five. Anyone may draw from it, but every draw is a gamble: a gold card only helps you if it shares at least one color with your commander's color identity.</p>
     <ul class="rules">
       <li><b>Look in secret.</b> When you draw a gold card, look at it without showing anyone. If it shares at least one color with your commander's color identity, you keep it.</li>
-      <li><b>Luck of the draw.</b> You cannot redraw a card that matches. You may only redraw if you can prove the card does not match: show it to the table, put it on the bottom of the Gold pile, and draw again from the Gold pile.</li>
-      <li><b>You lose the gamble.</b> You may redraw at most twice per draw. If the third card is also a mismatch, you keep it as a dead card.</li>
-      <li><b>No cheating.</b> You never have to show a card you keep, but if you cast a gold card that shares no color with your commander, the whole table will know.</li>
+      <li><b>One shot.</b> If it shares no color, show it to the table, put it on the bottom of the Gold pile, and draw from another pile you are allowed to draw from instead.</li>
       <li><b>Flashback costs are ignored</b> when checking a card's colors, and so are other costs outside the mana cost.</li>
       <li><b>Mostly-one-color cards</b> with a small second color elsewhere on the card live in their main color's pile and have no restriction. Only cards that are clearly multicolor are in the Gold pile.</li>
     </ul>
@@ -225,22 +223,24 @@
     <li><b>Land stacks:</b> each color's land box also holds 5 non-basic lands of that color, kept face down as a stack. The Colorless box has 10 non-basics in its stack. Anyone may take the top card of any land stack, whatever their commander's colors. You cannot look first.</li>
     <li><b>Land drops</b> work as normal: one per turn.</li>
     <li><b>No mulligans.</b> Your opening hand is fixed (see Setup).</li>
-    <li><b>Empty pile:</b> if the pile you want is empty, draw from another allowed pile or take a basic. When every pile you can draw from is empty, you can only take basics.</li>
+    <li><b>Empty piles:</b> if every pile in your commander's color identity and the Colorless pile are empty, you may draw from any other pile.</li>
   </ul>
 
   <h3>Commanders</h3>
   <ul class="rules">
     <li>Standard Commander rules: cast your commander from the command zone, commander tax of {2} per previous cast, 40 starting life, and 21 commander damage eliminates a player.</li>
     <li>Color identity only decides which piles you can draw from. It does not restrict the cards you hold or the basics you take.</li>
-    <li>Each player has their <b>own graveyard</b>. Graveyards are never shared, and this matters for commanders like Muldrotha.</li>
   </ul>
 
-  <h3>Rolling piles</h3>
+  <h3>Shared piles and deck manipulation</h3>
   <ul class="rules">
-    <li>Only shuffle a pile when a card tells you to. Cards that go to a graveyard or exile stay there until the game ends.</li>
-    <li>After the game, sort used cards back into their color's used bin. The next game continues from where each pile left off.</li>
-    <li>When a pile runs low, reset it with a pile deal: deal its used cards into 4 to 6 stacks, then stack those in a random order. Do this between games, not during one.</li>
-    <li>The small commander and ambition stacks can be shuffled normally.</li>
+    <li>Players share the piles, so every pile counts as "your deck" and also as "your opponent's deck".</li>
+    <li>Players keep their <b>own graveyards</b>.</li>
+    <li><b>No tutors:</b> nothing in the box lets you search a pile. Other forms of deck manipulation are allowed.</li>
+    <li><b>Top or bottom:</b> a card put on the top or bottom of a library goes on the pile of that card's color.</li>
+    <li><b>Shuffle:</b> when a card tells you to shuffle, you may shuffle any pile.</li>
+    <li><b>Look at the top:</b> when a card lets you look at the top cards, you may look at any pile.</li>
+    <li><b>Several actions:</b> if a card does more than one of these (for example look at the top cards, then shuffle), you may pick a different pile for each action.</li>
   </ul>
 
   <h3>Ambitions</h3>
@@ -282,7 +282,6 @@
     <li><b>Play.</b> On your draw step, draw from an allowed pile or take a basic. First elimination or last two players is where ambitions come alive.</li>
   </ol>
 
-  <div class="callout"><strong>After the game:</strong> return commanders and ambitions to their stacks, send used cards back to their color's used bin, and keep the piles in their current order for next time.</div>
 </section>
 
 <!-- COMMANDERS -->
